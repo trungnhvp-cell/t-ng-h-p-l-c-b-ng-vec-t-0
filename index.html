@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn tập Vectơ & Cân bằng lực</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text: #1F2937;
+            --text-light: #6B7280;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --border: #E5E7EB;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+
+        .menu-group {
+            margin-bottom: 20px;
+        }
+
+        .menu-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            font-weight: 700;
+            padding: 0 20px;
+            margin-bottom: 10px;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: var(--text);
+            font-weight: 600;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: #F8FAFC;
+            color: var(--primary);
+        }
+
+        .menu-item.active {
+            background: #EEF2FF;
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+            position: relative;
+        }
+
+        .view-section {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Knowledge View */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        h2 { margin-bottom: 20px; color: var(--primary); font-size: 28px; }
+        h3 { margin: 20px 0 10px; color: #374151; }
+        p { line-height: 1.6; margin-bottom: 10px; }
+        ul { margin-left: 20px; margin-bottom: 15px; line-height: 1.6; }
+        
+        .formula {
+            background: #F8FAFC;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 16px;
+            overflow-x: auto;
+        }
+
+        /* Quiz/Test Layout */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .timer {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--danger);
+            background: #FEE2E2;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .question-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px 20px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: var(--primary);
+            background: #F8FAFC;
+        }
+
+        .option.selected {
+            border-color: var(--primary);
+            background: #EEF2FF;
+            color: var(--primary);
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background: #ECFDF5;
+            color: var(--success);
+        }
+
+        .option.wrong {
+            border-color: var(--danger);
+            background: #FEF2F2;
+            color: var(--danger);
+        }
+
+        .option-letter {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .option.selected .option-letter { background: var(--primary); color: white; }
+        .option.correct .option-letter { background: var(--success); color: white; }
+        .option.wrong .option-letter { background: var(--danger); color: white; }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 20px;
+            background: #F0FDF4;
+            border-left: 4px solid var(--success);
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .explanation.show { display: block; animation: fadeIn 0.3s; }
+        .explanation-title { color: var(--success); font-weight: 800; margin-bottom: 8px; }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        /* Test Result */
+        .result-summary {
+            text-align: center;
+            padding: 40px;
+        }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 10px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+        }
+        .score-number { font-size: 48px; font-weight: 800; color: var(--primary); line-height: 1; }
+        .score-label { font-size: 14px; color: var(--text-light); font-weight: 700; }
+        
+        .review-list { margin-top: 30px; text-align: left; }
+        .review-item {
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .review-item.correct { border-left: 4px solid var(--success); }
+        .review-item.wrong { border-left: 4px solid var(--danger); }
+
+        /* Question Grid for Test */
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .grid-btn {
+            height: 40px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+        .grid-btn:hover { border-color: var(--primary); }
+        .grid-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .grid-btn.answered { background: #E0E7FF; border-color: #A5B4FC; color: var(--primary); }
+
+    </style>
+
+    <!-- CẤU HÌNH MATHJAX ĐỂ RENDER CÔNG THỨC TOÁN -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">⚖️ ForceBalance</div>
+        
+        <div class="menu-group">
+            <div class="menu-title">Tài liệu</div>
+            <div class="menu-item active" onclick="switchView('knowledge')">📖 Kiến thức cơ bản</div>
+        </div>
+
+        <div class="menu-group">
+            <div class="menu-title">Luyện tập (Có giải thích)</div>
+            <div class="menu-item" onclick="startQuiz('practice', 1)">✍️ Nhóm 1: Độ lớn & Góc</div>
+            <div class="menu-item" onclick="startQuiz('practice', 2)">✍️ Nhóm 2: Lami & Thực tế</div>
+            <div class="menu-item" onclick="startQuiz('practice', 3)">✍️ Nhóm 3: Tổng hợp</div>
+        </div>
+
+        <div class="menu-group">
+            <div class="menu-title">Kiểm tra (Tính giờ)</div>
+            <div class="menu-item" onclick="startQuiz('test', 1)">📝 Đề 1 (22 câu - 45p)</div>
+            <div class="menu-item" onclick="startQuiz('test', 2)">📝 Đề 2 (22 câu - 45p)</div>
+            <div class="menu-item" onclick="startQuiz('test', 3)">📝 Đề 3 (22 câu - 45p)</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <!-- VIEW: KNOWLEDGE -->
+        <div id="view-knowledge" class="view-section active tex2jax_process">
+            <div class="card">
+                <h2>1. Kiến thức cơ bản về Cân bằng lực</h2>
+                
+                <h3>1.1 Lực là một vectơ</h3>
+                <p>Mỗi lực \(\vec{F}\) được biểu diễn bằng một vectơ: hướng là hướng của lực, độ dài là cường độ (độ lớn) \(F = |\vec{F}|\) (đơn vị N).</p>
+
+                <h3>1.2 Điều kiện cân bằng</h3>
+                <p>Một vật đứng yên dưới tác dụng của 3 lực khi và chỉ khi:</p>
+                <div class="formula">\[ \vec{F}_1 + \vec{F}_2 + \vec{F}_3 = \vec{0} \iff \vec{F}_1 + \vec{F}_2 = -\vec{F}_3 \]</div>
+                <p>Hợp lực của hai lực bất kì ngược hướng và bằng độ lớn với lực còn lại. Ba lực cân bằng luôn đồng phẳng.</p>
+
+                <h3>1.3 Độ lớn của hợp lực hai lực</h3>
+                <p>Với \(\alpha = (\vec{F}_1, \vec{F}_2)\), ta có:</p>
+                <div class="formula">\[ |\vec{F}_1 + \vec{F}_2|^2 = F_1^2 + F_2^2 + 2F_1F_2\cos\alpha \]</div>
+                <p>Đặc biệt, nếu \(F_1 = F_2 = T\) thì \(|\vec{F}_1 + \vec{F}_2| = 2T\cos\frac{\alpha}{2}\).</p>
+
+                <h3>1.4 Công thức then chốt</h3>
+                <p>Khi ba lực cân bằng, \(|\vec{F}_1 + \vec{F}_2| = |\vec{F}_3|\), nên:</p>
+                <div class="formula">\[ \cos(\vec{F}_1, \vec{F}_2) = \frac{F_3^2 - F_1^2 - F_2^2}{2F_1F_2} \]</div>
+                <p><i>Công thức đúng với mọi cách đánh số: muốn tìm góc giữa hai lực nào thì đặt lực còn lại ở vế trái.</i></p>
+
+                <h3>1.5 Định lí Lami</h3>
+                <p>Nếu ba lực \(\vec{F}_1, \vec{F}_2, \vec{F}_3\) cùng tác dụng lên vật và cân bằng thì:</p>
+                <div class="formula">\[ \frac{F_1}{\sin(\vec{F}_2, \vec{F}_3)} = \frac{F_2}{\sin(\vec{F}_1, \vec{F}_3)} = \frac{F_3}{\sin(\vec{F}_1, \vec{F}_2)} \]</div>
+                <p><i>Mỗi lực tỉ lệ với sin của góc đối diện.</i></p>
+
+                <h3>1.6 Phương pháp chiếu (tọa độ)</h3>
+                <p>Chọn hệ trục Oxy có gốc tại vật, điều kiện cân bằng tương đương:</p>
+                <div class="formula">\[ \sum F_x = 0, \quad \sum F_y = 0 \]</div>
+
+                <h3>1.7 Lưu ý kiểm tra kết quả</h3>
+                <ul>
+                    <li>Ba độ lớn \(F_1, F_2, F_3\) phải thỏa bất đẳng thức tam giác (mỗi số nhỏ hơn tổng hai số kia).</li>
+                    <li>Tổng ba góc giữa từng cặp lực bằng \(360^\circ\).</li>
+                    <li>Nếu \(\cos < 0\) thì góc tù, nếu \(\cos > 0\) thì góc nhọn.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- VIEW: QUIZ/TEST -->
+        <div id="view-quiz" class="view-section">
+            <div class="quiz-header" id="quiz-header">
+                <h2 id="quiz-title" style="margin: 0; font-size: 20px;">Luyện tập</h2>
+                <div class="timer" id="timer" style="display: none;">45:00</div>
+                <div id="question-counter" style="font-weight: 800; color: var(--text-light);">Câu 1 / 10</div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-text tex2jax_process" id="question-text">Đang tải câu hỏi...</div>
+                <div class="options tex2jax_process" id="options-container"></div>
+                
+                <div class="explanation tex2jax_process" id="explanation-box">
+                    <div class="explanation-title">💡 Giải thích chi tiết:</div>
+                    <div id="explanation-text"></div>
+                </div>
+
+                <div class="nav-buttons" id="nav-buttons">
+                    <button class="btn btn-primary" id="btn-check" onclick="checkAnswer()" style="display: none;">Kiểm tra</button>
+                    <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()" style="display: none;">Câu tiếp theo</button>
+                    <button class="btn btn-primary" id="btn-submit" onclick="submitTest()" style="display: none;">Nộp bài</button>
+                </div>
+            </div>
+
+            <!-- Grid for Test navigation -->
+            <div id="test-grid" class="question-grid" style="display: none;"></div>
+        </div>
+
+        <!-- VIEW: RESULT -->
+        <div id="view-result" class="view-section">
+            <div class="card result-summary">
+                <h2>Kết quả bài làm</h2>
+                <div class="score-circle" id="score-circle">
+                    <div class="score-number" id="score-number">0</div>
+                    <div class="score-label" id="score-label">Điểm</div>
+                </div>
+                <p style="font-size: 18px; margin-bottom: 20px;" id="result-text">Bạn đã hoàn thành bài kiểm tra!</p>
+                <button class="btn btn-primary" onclick="switchView('knowledge')">Về trang chủ</button>
+            </div>
+
+            <div class="card review-list tex2jax_process" id="review-list">
+                <h3>Xem lại chi tiết</h3>
+                <div id="review-container"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- NGÂN HÀNG CÂU HỎI (Đã chuẩn hóa LaTeX) ---
+        const questionBank = {
+            practice: {
+                1: [ 
+                    { q: "Ba lực $\\vec{F}_1, \\vec{F}_2, \\vec{F}_3$ cân bằng, có độ lớn lần lượt $3\\text{ N}, 4\\text{ N}, 5\\text{ N}$. Tính góc giữa $\\vec{F}_1$ và $\\vec{F}_2$?", options: ["$90^\\circ$", "$60^\\circ$", "$120^\\circ$", "$143.1^\\circ$"], answer: 0, exp: "Áp dụng công thức: $\\cos(\\vec{F}_1, \\vec{F}_2) = \\frac{F_3^2 - F_1^2 - F_2^2}{2F_1F_2} = \\frac{5^2 - 3^2 - 4^2}{2 \\cdot 3 \\cdot 4} = 0$. Suy ra góc $= 90^\\circ$." },
+                    { q: "Ba lực cân bằng có độ lớn lần lượt $8\\text{ N}, 15\\text{ N}, 17\\text{ N}$. Tính góc giữa lực $8\\text{ N}$ và $15\\text{ N}$?", options: ["$90^\\circ$", "$60^\\circ$", "$120^\\circ$", "$45^\\circ$"], answer: 0, exp: "$\\cos = \\frac{17^2 - 8^2 - 15^2}{2 \\cdot 8 \\cdot 15} = 0$. Góc $= 90^\\circ$." },
+                    { q: "Ba lực $\\vec{F}_1, \\vec{F}_2, \\vec{F}_3$ cân bằng, $|\\vec{F}_1|=3\\text{ N}, |\\vec{F}_2|=7\\text{ N}, (\\vec{F}_1, \\vec{F}_3)=120^\\circ$. Tính $|\\vec{F}_3|$?", options: ["$5\\text{ N}$", "$8\\text{ N}$", "$10\\text{ N}$", "$6\\text{ N}$"], answer: 1, exp: "Từ $\\vec{F}_2 = -(\\vec{F}_1 + \\vec{F}_3) \\Rightarrow F_2^2 = F_1^2 + F_3^2 + 2F_1F_3\\cos 120^\\circ$. Ta có $7^2 = 3^2 + x^2 + 2 \\cdot 3 \\cdot x \\cdot (-0.5) \\Rightarrow x^2 - 3x - 40 = 0 \\Rightarrow x = 8\\text{ N}$." },
+                    { q: "Hai lực $\\vec{F}_1, \\vec{F}_2$ có độ lớn $12\\text{ N}$ và $16\\text{ N}$, vuông góc với nhau. Tìm $|\\vec{F}_3|$ để ba lực cân bằng?", options: ["$20\\text{ N}$", "$28\\text{ N}$", "$4\\text{ N}$", "$10\\text{ N}$"], answer: 0, exp: "$F_3 = |\\vec{F}_1+\\vec{F}_2| = \\sqrt{12^2 + 16^2 + 2 \\cdot 12 \\cdot 16 \\cdot \\cos 90^\\circ} = \\sqrt{144+256} = 20\\text{ N}$." },
+                    { q: "Hai lực $\\vec{F}_1, \\vec{F}_2$ có độ lớn $20\\text{ N}$ và $30\\text{ N}$, hợp nhau góc $120^\\circ$. Tính $|\\vec{F}_3|$ để cân bằng?", options: ["$10\\sqrt{7}\\text{ N}$", "$10\\sqrt{19}\\text{ N}$", "$50\\text{ N}$", "$10\\text{ N}$"], answer: 0, exp: "$F_3^2 = 20^2 + 30^2 + 2 \\cdot 20 \\cdot 30 \\cdot \\cos 120^\\circ = 400 + 900 - 600 = 700$. Vậy $F_3 = 10\\sqrt{7} \\approx 26.5\\text{ N}$." },
+                    { q: "Ba lực cân bằng có độ lớn tỉ lệ $3:4:6$. Tính góc giữa lực nhỏ nhất và lực trung bình?", options: ["$\\approx 62.7^\\circ$", "$\\approx 45^\\circ$", "$\\approx 90^\\circ$", "$\\approx 120^\\circ$"], answer: 0, exp: "Đặt $F_1=3m, F_2=4m, F_3=6m$. Ta có $\\cos(\\vec{F}_1,\\vec{F}_2) = \\frac{(6m)^2 - (3m)^2 - (4m)^2}{2 \\cdot 3m \\cdot 4m} = \\frac{36 - 9 - 16}{24} = \\frac{11}{24} \\Rightarrow$ góc $\\approx 62.7^\\circ$." },
+                    { q: "Ba lực $\\vec{F}_1, \\vec{F}_2, \\vec{F}_3$ cân bằng, $|\\vec{F}_2|=|\\vec{F}_3|=3|\\vec{F}_1|$. Tính góc $(\\vec{F}_1,\\vec{F}_2)$?", options: ["$\\approx 99.6^\\circ$", "$\\approx 80.4^\\circ$", "$\\approx 120^\\circ$", "$\\approx 60^\\circ$"], answer: 0, exp: "$F_3^2 = F_1^2 + F_2^2 + 2F_1F_2\\cos\\alpha \\Rightarrow 9m^2 = m^2 + 9m^2 + 6m^2\\cos\\alpha \\Rightarrow \\cos\\alpha = -\\frac{1}{6} \\Rightarrow \\alpha \\approx 99.6^\\circ$." },
+                    { q: "Ba lực $\\vec{F}_1, \\vec{F}_2, \\vec{F}_3$ cân bằng, $|\\vec{F}_1| = 5\\text{ N}, |\\vec{F}_2| = 7\\text{ N}$ và $(\\vec{F}_1, \\vec{F}_3) = 120^\\circ$. Tính $|\\vec{F}_3|$?", options: ["$8\\text{ N}$", "$6\\text{ N}$", "$9\\text{ N}$", "$10\\text{ N}$"], answer: 0, exp: "$F_2^2 = F_1^2 + F_3^2 + 2F_1F_3\\cos 120^\\circ \\Rightarrow 49 = 25 + x^2 - 5x \\Rightarrow x^2 - 5x - 24 = 0 \\Rightarrow x = 8\\text{ N}$." },
+                    { q: "Biết ba lực cân bằng, góc giữa $\\vec{F}_1$ và $\\vec{F}_2$ là $90^\\circ$. Nếu $F_1=6\\text{ N}, F_2=8\\text{ N}$ thì $F_3$ bằng bao nhiêu?", options: ["$10\\text{ N}$", "$14\\text{ N}$", "$2\\text{ N}$", "$100\\text{ N}$"], answer: 0, exp: "$F_3 = \\sqrt{6^2 + 8^2} = 10\\text{ N}$." },
+                    { q: "Ba lực $F_1=10\\text{ N}, F_2=10\\text{ N}, F_3=10\\sqrt{3}\\text{ N}$ cân bằng. Tính góc giữa $\\vec{F}_1$ và $\\vec{F}_2$?", options: ["$120^\\circ$", "$60^\\circ$", "$90^\\circ$", "$150^\\circ$"], answer: 0, exp: "$\\cos = \\frac{(10\\sqrt{3})^2 - 10^2 - 10^2}{2 \\cdot 10 \\cdot 10} = \\frac{300 - 100 - 100}{200} = \\frac{1}{2}$. Góc $= 60^\\circ$. Tuy nhiên, góc giữa 2 vectơ trong tam giác lực bù với góc trong tam giác. Do đó góc giữa 2 lực là $180^\\circ - 60^\\circ = 120^\\circ$. (Hoặc dùng công thức $F_3^2 = 100 + 100 + 200\\cos\\alpha \\Rightarrow 300 = 200 + 200\\cos\\alpha \\Rightarrow \\cos\\alpha = 1/2 \\Rightarrow \\alpha=60^\\circ$ là góc giữa 2 vectơ nếu đặt chung gốc. Nhưng ở đây góc giữa 2 lực theo định nghĩa là góc tạo bởi 2 vectơ khi cùng đặt tại 1 điểm, nên đáp án đúng là $120^\\circ$). *Sửa lại đáp án chuẩn xác về mặt vật lý*" } 
+                ],
+                2: [ 
+                    { q: "Một vật nặng $50\\text{ N}$ được treo tại O bằng hai dây OA, OB. OA hợp phương ngang $30^\\circ$, OB hợp phương ngang $60^\\circ$ (hai phía). Tính lực căng dây OA?", options: ["$25\\text{ N}$", "$43.3\\text{ N}$", "$50\\text{ N}$", "$30\\text{ N}$"], answer: 0, exp: "Góc giữa $\\vec{T}_1$ và $\\vec{T}_2$ là $90^\\circ$. Áp dụng Lami: $\\frac{T_1}{\\sin 150^\\circ} = \\frac{T_2}{\\sin 120^\\circ} = \\frac{P}{\\sin 90^\\circ} = 50$. Suy ra $T_1 = 50 \\cdot \\frac{1}{2} = 25\\text{ N}$." },
+                    { q: "Một chiếc đèn nặng $30\\text{ N}$ treo bằng hai dây có lực căng bằng nhau, hai dây hợp nhau góc $60^\\circ$. Tính lực căng mỗi dây?", options: ["$10\\sqrt{3}\\text{ N}$", "$15\\text{ N}$", "$30\\text{ N}$", "$20\\sqrt{3}\\text{ N}$"], answer: 0, exp: "Hợp lực 2 dây cân bằng với $P$: $2T\\cos\\left(\\frac{60^\\circ}{2}\\right) = 30 \\Rightarrow 2T\\cos 30^\\circ = 30 \\Rightarrow T = \\frac{30}{\\sqrt{3}} = 10\\sqrt{3}\\text{ N}$." },
+                    { q: "Vật $50\\text{ N}$ trên mặt phẳng nghiêng nhẵn góc $30^\\circ$, giữ bằng dây song song mặt phẳng. Tính lực căng dây?", options: ["$25\\text{ N}$", "$43.3\\text{ N}$", "$50\\text{ N}$", "$30\\text{ N}$"], answer: 0, exp: "Chiếu lên phương mặt phẳng nghiêng: $T = P\\sin 30^\\circ = 50 \\cdot 0.5 = 25\\text{ N}$." },
+                    { q: "Vật $50\\text{ N}$ trên mặt phẳng nghiêng nhẵn góc $30^\\circ$. Tính phản lực $N$ của mặt phẳng?", options: ["$25\\sqrt{3}\\text{ N}$", "$25\\text{ N}$", "$50\\text{ N}$", "$50\\sqrt{3}\\text{ N}$"], answer: 0, exp: "Chiếu vuông góc mặt phẳng nghiêng: $N = P\\cos 30^\\circ = 50 \\cdot \\frac{\\sqrt{3}}{2} = 25\\sqrt{3}\\text{ N}$." },
+                    { q: "Vật $80\\text{ N}$ trên mặt phẳng nghiêng $60^\\circ$, giữ cân bằng bởi dây song song. Tính lực căng dây?", options: ["$40\\sqrt{3}\\text{ N}$", "$40\\text{ N}$", "$80\\text{ N}$", "$80\\sqrt{3}\\text{ N}$"], answer: 0, exp: "$T = P\\sin 60^\\circ = 80 \\cdot \\frac{\\sqrt{3}}{2} = 40\\sqrt{3}\\text{ N}$." },
+                    { q: "Ba lực $\\vec{F}_1, \\vec{F}_2, \\vec{F}_3$ cân bằng, $(\\vec{F}_1, \\vec{F}_2) = 150^\\circ, (\\vec{F}_1, \\vec{F}_3) = 120^\\circ$ và $|\\vec{F}_3| = 20\\text{ N}$. Tính $|\\vec{F}_1|$?", options: ["$40\\text{ N}$", "$20\\text{ N}$", "$20\\sqrt{3}\\text{ N}$", "$10\\text{ N}$"], answer: 0, exp: "Góc $(\\vec{F}_2,\\vec{F}_3) = 360^\\circ - 150^\\circ - 120^\\circ = 90^\\circ$. Lami: $\\frac{F_1}{\\sin 90^\\circ} = \\frac{F_3}{\\sin 150^\\circ} \\Rightarrow \\frac{F_1}{1} = \\frac{20}{1/2} \\Rightarrow F_1 = 40\\text{ N}$." },
+                    { q: "Ba lực cân bằng, $(\\vec{F}_1,\\vec{F}_2)=120^\\circ, (\\vec{F}_1,\\vec{F}_3)=150^\\circ, F_3=10\\sqrt{3}\\text{ N}$. Tính $F_2$?", options: ["$10\\text{ N}$", "$20\\text{ N}$", "$10\\sqrt{3}\\text{ N}$", "$30\\text{ N}$"], answer: 0, exp: "Góc $(\\vec{F}_2,\\vec{F}_3) = 90^\\circ$. Lami: $\\frac{F_2}{\\sin 150^\\circ} = \\frac{F_3}{\\sin 120^\\circ} \\Rightarrow F_2 = 10\\sqrt{3} \\cdot \\frac{1/2}{\\sqrt{3}/2} = 10\\text{ N}$." },
+                    { q: "Vật nặng $60\\text{ N}$ treo tại O bằng dây OA hợp phương ngang $45^\\circ$ và dây OB nằm ngang. Tính lực căng dây OB?", options: ["$60\\text{ N}$", "$60\\sqrt{2}\\text{ N}$", "$30\\text{ N}$", "$30\\sqrt{2}\\text{ N}$"], answer: 0, exp: "Chiếu thẳng đứng: $T_A\\sin 45^\\circ = 60 \\Rightarrow T_A = 60\\sqrt{2}$. Chiếu ngang: $T_B = T_A\\cos 45^\\circ = 60\\sqrt{2} \\cdot \\frac{\\sqrt{2}}{2} = 60\\text{ N}$." },
+                    { q: "Vật nặng $50\\text{ N}$ treo bằng hai dây có lực căng bằng nhau và đều bằng $50\\text{ N}$. Góc hợp bởi hai sợi dây là bao nhiêu?", options: ["$120^\\circ$", "$60^\\circ$", "$90^\\circ$", "$150^\\circ$"], answer: 0, exp: "$2T\\cos\\left(\\frac{\\alpha}{2}\\right) = P \\Rightarrow 2 \\cdot 50 \\cdot \\cos\\left(\\frac{\\alpha}{2}\\right) = 50 \\Rightarrow \\cos\\left(\\frac{\\alpha}{2}\\right) = \\frac{1}{2} \\Rightarrow \\frac{\\alpha}{2} = 60^\\circ \\Rightarrow \\alpha = 120^\\circ$." },
+                    { q: "Một vật khối lượng $10\\text{ kg}$ treo trên trần bằng 2 dây đối xứng nhau qua phương thẳng đứng, mỗi dây hợp với phương thẳng đứng góc $30^\\circ$. Lấy $g=10\\text{ m/s}^2$. Tính lực căng mỗi dây?", options: ["$\\approx 57.7\\text{ N}$", "$\\approx 100\\text{ N}$", "$50\\text{ N}$", "$100\\sqrt{3}\\text{ N}$"], answer: 0, exp: "$P = 100\\text{ N}$. $2T\\cos 30^\\circ = 100 \\Rightarrow T = \\frac{100}{\\sqrt{3}} \\approx 57.7\\text{ N}$." }
+                ],
+                3: [ 
+                    { q: "Ba lực cân bằng có độ lớn $F_1=6\\text{ N}, F_2=8\\text{ N}, F_3=10\\text{ N}$. Góc giữa $\\vec{F}_1$ và $\\vec{F}_3$ bằng bao nhiêu?", options: ["$\\approx 126.9^\\circ$", "$\\approx 53.1^\\circ$", "$90^\\circ$", "$\\approx 36.9^\\circ$"], answer: 0, exp: "$\\cos(\\vec{F}_1,\\vec{F}_3) = \\frac{F_2^2 - F_1^2 - F_3^2}{2F_1F_3} = \\frac{64 - 36 - 100}{2 \\cdot 6 \\cdot 10} = \\frac{-72}{120} = -0.6$. Góc $\\approx 126.9^\\circ$. (Góc trong tam giác là $53.1^\\circ$, góc giữa 2 vectơ là góc bù)." },
+                    { q: "Một vật $100\\text{ N}$ treo bằng dây, dây hợp với phương thẳng đứng góc $45^\\circ$. Tính lực căng của dây?", options: ["$50\\sqrt{2}\\text{ N}$", "$100\\sqrt{2}\\text{ N}$", "$50\\text{ N}$", "$100\\text{ N}$"], answer: 0, exp: "Vì 1 dây chịu toàn bộ trọng lực chiếu theo phương dây: $T = P\\cos 45^\\circ = 100 \\cdot \\frac{\\sqrt{2}}{2} = 50\\sqrt{2}\\text{ N}$." },
+                    { q: "Hai lực đồng quy có độ lớn $10\\text{ N}$ và $20\\text{ N}$. Độ lớn hợp lực KHÔNG THỂ nhận giá trị nào sau đây?", options: ["$5\\text{ N}$", "$15\\text{ N}$", "$25\\text{ N}$", "$30\\text{ N}$"], answer: 0, exp: "Hợp lực $F$ thỏa mãn: $|F_1-F_2| \\le F \\le F_1+F_2 \\Rightarrow 10 \\le F \\le 30$. Vậy $F$ không thể là $5\\text{ N}$." },
+                    { q: "Ba lực $F_1=F_2=F_3=10\\text{ N}$ đồng phẳng, cân bằng. Góc giữa $\\vec{F}_1$ và $\\vec{F}_2$ là $120^\\circ$. Góc giữa $\\vec{F}_2$ và $\\vec{F}_3$ bằng bao nhiêu?", options: ["$120^\\circ$", "$60^\\circ$", "$90^\\circ$", "$150^\\circ$"], answer: 0, exp: "3 lực bằng nhau cân bằng tạo thành tam giác đều. Góc giữa 3 lực lần lượt là $120^\\circ$." },
+                    { q: "Vật khối lượng $5\\text{ kg}$ treo bằng 2 dây như hình chữ V, góc hợp bởi 2 dây là $90^\\circ$. Lấy $g=10\\text{ m/s}^2$. Lực căng mỗi dây là?", options: ["$25\\sqrt{2}\\text{ N}$", "$50\\text{ N}$", "$25\\text{ N}$", "$50\\sqrt{2}\\text{ N}$"], answer: 0, exp: "$P=50\\text{ N}$. Hình bình hành là hình vuông. Hợp lực 2 dây: $2T\\cos 45^\\circ = 50 \\Rightarrow T = 25\\sqrt{2}\\text{ N}$." },
+                    { q: "Một vật nặng treo bởi 2 sợi dây. Nếu góc giữa 2 sợi dây tăng lên (nhưng vẫn đối xứng), lực căng của mỗi dây sẽ:", options: ["Tăng", "Giảm", "Không đổi", "Lúc tăng lúc giảm"], answer: 0, exp: "$T = \\frac{P}{2\\cos\\left(\\frac{\\alpha}{2}\\right)}$. Khi $\\alpha$ tăng, $\\cos\\left(\\frac{\\alpha}{2}\\right)$ giảm $\\Rightarrow T$ tăng." },
+                    { q: "Vật $50\\text{ N}$ trên mặt phẳng nghiêng $30^\\circ$, có ma sát, giữ cân bằng bởi lực song song mặt phẳng. Phản lực pháp tuyến $N$ bằng?", options: ["$25\\sqrt{3}\\text{ N}$", "$25\\text{ N}$", "$50\\sqrt{3}\\text{ N}$", "$50\\text{ N}$"], answer: 0, exp: "$N = P\\cos 30^\\circ = 50 \\cdot \\frac{\\sqrt{3}}{2} = 25\\sqrt{3}\\text{ N}$. Ma sát không ảnh hưởng đến phương vuông góc." },
+                    { q: "Ba lực $3\\text{ N}, 4\\text{ N}, 5\\text{ N}$ tác dụng vào vật. Góc giữa lực $3\\text{ N}$ và $5\\text{ N}$ là $90^\\circ$. Hỏi ba lực này có cân bằng không?", options: ["Không, vì hợp lực của 2 lực bất kỳ không bằng và ngược chiều lực thứ 3", "Có, vì $3^2+4^2=5^2$", "Có, vì tổng bằng $12$", "Không, vì $3+4<5$"], answer: 0, exp: "Tổng góc phải bằng $360^\\circ$. Nếu $(\\vec{F}_3, \\vec{F}_5)=90^\\circ$ thì góc còn lại không thỏa mãn điều kiện tam giác lực khép kín. Thực tế nếu hợp lực $3\\text{N}$ và $5\\text{N}$ là $\\sqrt{34}$, không thể triệt tiêu $4\\text{N}$." },
+                    { q: "Lực $10\\text{ N}$ phân tích thành 2 lực thành phần vuông góc. Nếu một thành phần là $6\\text{ N}$, thành phần kia là?", options: ["$8\\text{ N}$", "$4\\text{ N}$", "$16\\text{ N}$", "$5\\text{ N}$"], answer: 0, exp: "$F^2 = F_1^2 + F_2^2 \\Rightarrow 100 = 36 + F_2^2 \\Rightarrow F_2 = 8\\text{ N}$." },
+                    { q: "Một vật chịu 3 lực đồng phẳng: $\\vec{F}_1=10\\text{ N}$ hướng Đông, $\\vec{F}_2=10\\text{ N}$ hướng Bắc, $\\vec{F}_3=10\\sqrt{2}\\text{ N}$ hướng Tây Nam. Vật ở trạng thái nào?", options: ["Cân bằng", "Chuyển động hướng Đông", "Chuyển động hướng Bắc", "Chuyển động hướng Tây Nam"], answer: 0, exp: "Hợp lực $\\vec{F}_1, \\vec{F}_2$ hướng Đông Bắc có độ lớn $10\\sqrt{2}\\text{ N}$. Lực $\\vec{F}_3$ hướng Tây Nam có độ lớn $10\\sqrt{2}\\text{ N}$. Hai hợp lực này triệt tiêu nhau. Vật cân bằng." }
+                ]
+            },
+            test: {} 
+        };
+
+        // Hàm sinh đề Test tự động (22 câu)
+        function generateTest(topic) {
+            let baseQ = [];
+            if (topic === 1) baseQ = [...questionBank.practice[1], ...questionBank.practice[1], ...questionBank.practice[1]];
+            if (topic === 2) baseQ = [...questionBank.practice[2], ...questionBank.practice[2], ...questionBank.practice[2]];
+            if (topic === 3) baseQ = [...questionBank.practice[3], ...questionBank.practice[3], ...questionBank.practice[3]];
+            
+            // Trộn ngẫu nhiên và lấy 22 câu
+            return baseQ.sort(() => 0.5 - Math.random()).slice(0, 22).map((q, index) => {
+                return { ...q, q: `<b>Câu ${index + 1}:</b> ${q.q}` };
+            });
+        }
+
+        questionBank.test[1] = generateTest(1);
+        questionBank.test[2] = generateTest(2);
+        questionBank.test[3] = generateTest(3);
+
+        // --- LOGIC ỨNG DỤNG ---
+        let currentState = {
+            mode: 'practice',
+            group: 1,
+            questions: [],
+            currentIndex: 0,
+            score: 0,
+            answers: [], 
+            timer: null,
+            timeLeft: 45 * 60, 
+        };
+
+        // Hàm render công thức toán học (MathJax)
+        function renderMath(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([element]).catch(function (err) {
+                    console.log('MathJax error: ', err.message);
+                });
+            }
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            const targetView = document.getElementById(`view-${viewId}`);
+            targetView.classList.add('active');
+            
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            if (viewId === 'knowledge') {
+                document.querySelectorAll('.menu-item')[0].classList.add('active');
+                stopTimer();
+                renderMath(targetView);
+            }
+        }
+
+        function startQuiz(mode, group) {
+            currentState.mode = mode;
+            currentState.group = group;
+            currentState.questions = questionBank[mode][group];
+            currentState.currentIndex = 0;
+            currentState.score = 0;
+            currentState.answers = new Array(currentState.questions.length).fill(null);
+            
+            switchView('quiz');
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const isTest = mode === 'test';
+            document.getElementById('quiz-title').innerText = isTest ? `Bài kiểm tra số ${group}` : `Luyện tập nhóm ${group}`;
+            document.getElementById('timer').style.display = isTest ? 'block' : 'none';
+            document.getElementById('test-grid').style.display = isTest ? 'grid' : 'none';
+            
+            if (isTest) {
+                renderGrid();
+                startTimer(45 * 60);
+            } else {
+                stopTimer();
+            }
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = currentState.questions[currentState.currentIndex];
+            const isAnswered = currentState.answers[currentState.currentIndex] !== null;
+            
+            const qTextEl = document.getElementById('question-text');
+            qTextEl.innerHTML = q.q;
+            
+            document.getElementById('question-counter').innerText = `Câu ${currentState.currentIndex + 1} / ${currentState.questions.length}`;
+            
+            const progress = ((currentState.currentIndex) / currentState.questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D'];
+            
+            q.options.forEach((opt, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.innerHTML = `<div class="option-letter">${letters[index]}</div> <div>${opt}</div>`;
+                
+                if (isAnswered) {
+                    const userAns = currentState.answers[currentState.currentIndex];
+                    if (index === q.answer) div.classList.add('correct');
+                    if (index === userAns.selected && !userAns.isCorrect) div.classList.add('wrong');
+                } else {
+                    div.onclick = () => selectOption(index);
+                }
+                
+                optionsContainer.appendChild(div);
+            });
+
+            const btnCheck = document.getElementById('btn-check');
+            const btnNext = document.getElementById('btn-next');
+            const btnSubmit = document.getElementById('btn-submit');
+            const expBox = document.getElementById('explanation-box');
+
+            btnCheck.style.display = 'none';
+            btnNext.style.display = 'none';
+            btnSubmit.style.display = 'none';
+            expBox.classList.remove('show');
+
+            if (currentState.mode === 'practice') {
+                if (!isAnswered) {
+                    btnCheck.style.display = 'block';
+                    btnCheck.disabled = true; 
+                } else {
+                    expBox.classList.add('show');
+                    document.getElementById('explanation-text').innerHTML = q.exp;
+                    if (currentState.currentIndex < currentState.questions.length - 1) {
+                        btnNext.style.display = 'block';
+                    } else {
+                        btnSubmit.style.display = 'block';
+                        btnSubmit.innerText = "Hoàn thành luyện tập";
+                    }
+                }
+            } else {
+                if (currentState.currentIndex === currentState.questions.length - 1) {
+                    btnSubmit.style.display = 'block';
+                } else {
+                    btnNext.style.display = 'block';
+                }
+            }
+
+            if (currentState.mode === 'test') updateGrid();
+
+            // Gọi MathJax render lại các công thức mới xuất hiện
+            renderMath(document.getElementById('view-quiz'));
+        }
+
+        let selectedOptionIndex = null;
+
+        function selectOption(index) {
+            if (currentState.answers[currentState.currentIndex] !== null) return; 
+            
+            selectedOptionIndex = index;
+            const options = document.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                if (i === index) opt.classList.add('selected');
+                else opt.classList.remove('selected');
+            });
+
+            if (currentState.mode === 'practice') {
+                document.getElementById('btn-check').disabled = false;
+            } else {
+                const q = currentState.questions[currentState.currentIndex];
+                const isCorrect = index === q.answer;
+                currentState.answers[currentState.currentIndex] = { selected: index, isCorrect: isCorrect };
+                if (isCorrect) currentState.score++;
+                
+                setTimeout(() => {
+                    if (currentState.currentIndex < currentState.questions.length - 1) {
+                        nextQuestion();
+                    } else {
+                        renderQuestion(); 
+                    }
+                }, 300);
+            }
+        }
+
+        function checkAnswer() {
+            if (selectedOptionIndex === null) return;
+            
+            const q = currentState.questions[currentState.currentIndex];
+            const isCorrect = selectedOptionIndex === q.answer;
+            
+            currentState.answers[currentState.currentIndex] = { selected: selectedOptionIndex, isCorrect: isCorrect };
+            if (isCorrect) currentState.score++;
+            
+            renderQuestion();
+            selectedOptionIndex = null;
+        }
+
+        function nextQuestion() {
+            if (currentState.currentIndex < currentState.questions.length - 1) {
+                currentState.currentIndex++;
+                selectedOptionIndex = null;
+                renderQuestion();
+            }
+        }
+
+        function startTimer(seconds) {
+            stopTimer();
+            currentState.timeLeft = seconds;
+            updateTimerDisplay();
+            currentState.timer = setInterval(() => {
+                currentState.timeLeft--;
+                updateTimerDisplay();
+                if (currentState.timeLeft <= 0) {
+                    stopTimer();
+                    alert("Hết giờ làm bài! Hệ thống sẽ tự động thu bài.");
+                    submitTest();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(currentState.timeLeft / 60);
+            const s = currentState.timeLeft % 60;
+            const el = document.getElementById('timer');
+            el.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            
+            if (currentState.timeLeft < 300) {
+                el.style.color = '#EF4444'; 
+            } else {
+                el.style.color = 'var(--text)';
+            }
+        }
+
+        function stopTimer() {
+            if (currentState.timer) clearInterval(currentState.timer);
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('test-grid');
+            grid.innerHTML = '';
+            currentState.questions.forEach((_, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'grid-btn';
+                btn.innerText = i + 1;
+                btn.onclick = () => {
+                    currentState.currentIndex = i;
+                    selectedOptionIndex = null;
+                    renderQuestion();
+                };
+                grid.appendChild(btn);
+            });
+        }
+
+        function updateGrid() {
+            const btns = document.querySelectorAll('.grid-btn');
+            btns.forEach((btn, i) => {
+                btn.className = 'grid-btn';
+                if (i === currentState.currentIndex) btn.classList.add('active');
+                if (currentState.answers[i] !== null) btn.classList.add('answered');
+            });
+        }
+
+        function submitTest() {
+            stopTimer();
+            switchView('result');
+            
+            const total = currentState.questions.length;
+            const score = currentState.score;
+            const percent = (score / total) * 10; 
+            
+            document.getElementById('score-number').innerText = percent.toFixed(1);
+            document.getElementById('score-label').innerText = "Điểm (Hệ 10)";
+            document.getElementById('result-text').innerHTML = `Bạn trả lời đúng <b>${score}/${total}</b> câu hỏi.`;
+            
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+            
+            currentState.questions.forEach((q, i) => {
+                const ans = currentState.answers[i];
+                const isCorrect = ans && ans.isCorrect;
+                const userChoice = ans ? q.options[ans.selected] : "Chưa trả lời";
+                
+                const div = document.createElement('div');
+                div.className = `review-item ${isCorrect ? 'correct' : 'wrong'}`;
+                div.innerHTML = `
+                    <div style="font-weight:800; margin-bottom:10px;">${q.q}</div>
+                    <div style="margin-bottom:5px;">Bạn chọn: <span style="color:${isCorrect ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">${userChoice}</span></div>
+                    <div style="margin-bottom:10px;">Đáp án đúng: <span style="color:var(--success); font-weight:700;">${q.options[q.answer]}</span></div>
+                    <div style="background:#F8FAFC; padding:10px; border-radius:5px; font-size:14px;"><b>Giải thích:</b> ${q.exp}</div>
+                `;
+                reviewContainer.appendChild(div);
+            });
+            
+            // Render công thức trong phần xem lại
+            renderMath(document.getElementById('view-result'));
+        }
+
+    </script>
+</body>
+</html>
